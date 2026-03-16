@@ -132,17 +132,28 @@
                 }
             };
 
-            // Auto-subscribe after a short delay (gives SW time to activate)
+            // Auto-subscribe if already granted
             setTimeout(() => {
                 if ('Notification' in window && 'PushManager' in window) {
                     if (Notification.permission === 'granted') {
                         window.subscribeToPush();
                     } else if (Notification.permission === 'default') {
-                        // Prompt for permission directly on load
-                        window.subscribeToPush();
+                        // Show a notification banner — iOS requires user tap to request permission
+                        window.showPushBanner = function() {
+                            if (document.getElementById('pushBanner')) return;
+                            const banner = document.createElement('div');
+                            banner.id = 'pushBanner';
+                            banner.style.cssText = 'position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172a; color: white; padding: 12px 20px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 10000; display: flex; align-items: center; gap: 12px; font-size: 13px; font-family: Inter, sans-serif; max-width: 90%;';
+                            banner.innerHTML = '<span>Enable push notifications for new events?</span><button onclick="window.subscribeToPush().then(()=>{document.getElementById(\'pushBanner\').remove()}).catch(()=>{document.getElementById(\'pushBanner\').remove()})" style="padding: 6px 14px; background: white; color: #0f172a; border: none; border-radius: 6px; font-weight: 600; font-size: 12px; cursor: pointer; white-space: nowrap;">Enable</button><button onclick="document.getElementById(\'pushBanner\').remove();localStorage.setItem(\'pushDismissed\',\'1\')" style="background: none; border: none; color: #94a3b8; font-size: 16px; cursor: pointer; padding: 4px;">✕</button>';
+                            document.body.appendChild(banner);
+                        };
+                        // Show banner after data loads, unless previously dismissed
+                        if (!localStorage.getItem('pushDismissed')) {
+                            setTimeout(window.showPushBanner, 4000);
+                        }
                     }
                 }
-            }, 3000);
+            }, 2000);
 
             // Listen for messages from service worker
             navigator.serviceWorker.addEventListener('message', event => {
