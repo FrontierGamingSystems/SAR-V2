@@ -138,8 +138,8 @@
                     if (Notification.permission === 'granted') {
                         window.subscribeToPush();
                     } else if (Notification.permission === 'default') {
-                        // Will prompt on first interaction — trigger from welcome popup close
-                        window.pushPendingSubscribe = true;
+                        // Prompt for permission directly on load
+                        window.subscribeToPush();
                     }
                 }
             }, 3000);
