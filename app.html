@@ -434,8 +434,8 @@
 
         @media (max-width: 1100px) {
             .nav-overflow-dropdown { display: block; }
-            /* Hide tabs that overflow */
-            .nav-tabs button:nth-child(n+5) { display: none; }
+            /* Hide Reporting(4th) and Data(6th) on mobile — keep Events, Products, Leaderboard, Notifications visible */
+            .nav-tabs button[data-mobile-hide] { display: none; }
         }
 
         /* Product Analytics buttons */
@@ -1347,13 +1347,24 @@
             .event-info-section {
                 display: none !important;
             }
-            
+
             /* Fix header wrapping - make it more compact */
             .top-nav {
                 flex-direction: column;
                 height: auto !important;
-                padding: 10px 5px;
-                gap: 5px;
+                padding: 8px 10px;
+                gap: 4px;
+                position: relative;
+            }
+
+            /* Since nav is now relative (not fixed) on mobile, no margin-top needed */
+            .container {
+                margin-top: 10px !important;
+            }
+
+            .view-container > .container,
+            .view-container > div:first-child {
+                margin-top: 10px !important;
             }
             
             .nav-brand {
@@ -1580,10 +1591,45 @@
             .chart-title {
                 font-size: 14px !important;
             }
-            
+
             #chartTypeSelector {
                 font-size: 11px !important;
                 padding: 4px 6px !important;
+            }
+
+            /* Product Analytics mobile fixes */
+            #product-analytics-view .container {
+                padding: 10px !important;
+            }
+
+            /* Stack chart grids vertically */
+            #pa-origin-content > div,
+            #pa-product-content > div:nth-child(2) {
+                grid-template-columns: 1fr !important;
+            }
+
+            /* Filter bar stacks */
+            #product-analytics-view [style*="flex-wrap: wrap"] {
+                flex-direction: column !important;
+            }
+
+            /* Product selector wraps tighter */
+            #pa-product-selector {
+                gap: 4px !important;
+            }
+            #pa-product-selector label {
+                font-size: 11px !important;
+                padding: 3px 6px !important;
+            }
+
+            /* Leaderboard cards scroll horizontally */
+            .leaderboard-row > div:nth-child(2) {
+                overflow-x: auto !important;
+            }
+
+            /* Product boxes stack on mobile */
+            .product-boxes-container {
+                grid-template-columns: 1fr !important;
             }
         }
         
@@ -2524,12 +2570,12 @@
                 <button class="nav-tab active" onclick="switchView('events')">Events</button>
                 <button class="nav-tab" onclick="switchView('product-analytics')">Products</button>
                 <button class="nav-tab" onclick="switchView('leaderboard')">Leaderboard</button>
-                <button class="nav-tab" onclick="switchView('reporting')">Reporting</button>
+                <button class="nav-tab" onclick="switchView('reporting')" data-mobile-hide>Reporting</button>
                 <button class="nav-tab" onclick="switchView('notifications')" style="position: relative;">
                     Notifications
                     <span id="notificationBadge" style="display: none; position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; border-radius: 10px; padding: 2px 6px; font-size: 10px; font-weight: 600;">0</span>
                 </button>
-                <button class="nav-tab" onclick="switchView('data')">Data</button>
+                <button class="nav-tab" onclick="switchView('data')" data-mobile-hide>Data</button>
                 <!-- Financial tab hidden -->
                 <button class="nav-tab" onclick="switchView('financial')" style="display: none;">Financial</button>
             </div>
@@ -16319,8 +16365,7 @@ Hover over individual metrics for detailed averages.`)}
 
         // Tabs that overflow on narrow screens
         const overflowTabs = [
-            { label: 'Products', view: 'product-analytics' },
-            { label: 'Financial', view: 'financial' },
+            { label: 'Reporting', view: 'reporting' },
             { label: 'Data', view: 'data' },
         ];
 
